@@ -1,17 +1,15 @@
 package io.github.plume.oss.passes
 
-import io.github.plume.oss.GlobalCache
 import io.github.plume.oss.domain.model.DeltaGraph
 import io.github.plume.oss.drivers.IDriver
+import io.github.plume.oss.store.PlumeStorage
 import io.github.plume.oss.util.DiffGraphUtil
 import io.shiftleft.codepropertygraph.Cpg
 import io.shiftleft.codepropertygraph.generated.NodeTypes
-import io.shiftleft.codepropertygraph.generated.nodes.AstNode
 import io.shiftleft.codepropertygraph.generated.nodes.Method
 import io.shiftleft.dataflowengineoss.passes.reachingdef.ReachingDefPass
 import io.shiftleft.passes.DiffGraph
 import io.shiftleft.passes.ParallelCpgPass
-import io.shiftleft.semanticcpg.passes.containsedges.ContainsEdgePass
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -27,22 +25,22 @@ import io.shiftleft.codepropertygraph.generated.nodes.Factories as NodeFactories
 /**
  * Runs passes from [io.shiftleft.dataflowengineoss.passes] over method bodies.
  */
-class SCPGPass(private val driver: IDriver) {
+class DataFlowPass(private val driver: IDriver) {
 
-    private val logger: Logger = LogManager.getLogger(SCPGPass::javaClass)
+    private val logger: Logger = LogManager.getLogger(DataFlowPass::javaClass)
 
     /**
-     * Calls SCPG passes. Converges all methods into a local OverflowDB graph instance. This is done concurrently.
+     * Calls data flow passes. Converges all methods into a local OverflowDB graph instance. This is done concurrently.
      */
     fun runPass() {
         runBlocking {
             val bufferedChannel = Channel<DeltaGraph>()
             val g = Graph.open(Config.withDefaults(), NodeFactories.allAsJava(), EdgeFactories.allAsJava())
             // Producer
-            GlobalCache.methodBodies.values.forEach { mg -> launch { bufferedChannel.send(mg) } }
+            PlumeStorage.methodCpgs.values.forEach { mg -> launch { bufferedChannel.send(mg) } }
             // Single consumer
             launch {
-                repeat(GlobalCache.methodBodies.size) { bufferedChannel.receive().toOverflowDb(g) }
+                repeat(PlumeStorage.methodCpgs.size) { bufferedChannel.receive().toOverflowDb(g) }
                 bufferedChannel.close()
             }.join() // Suspend until the channel is fully consumed.
             // Run passes

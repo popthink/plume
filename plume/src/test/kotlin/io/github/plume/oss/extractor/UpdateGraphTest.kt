@@ -4,6 +4,9 @@ import io.github.plume.oss.Extractor
 import io.github.plume.oss.drivers.DriverFactory
 import io.github.plume.oss.drivers.GraphDatabase
 import io.github.plume.oss.drivers.TinkerGraphDriver
+import io.github.plume.oss.store.LocalCache
+import io.shiftleft.codepropertygraph.generated.NodeKeyNames.FULL_NAME
+import io.shiftleft.codepropertygraph.generated.NodeTypes.TYPE
 import io.shiftleft.codepropertygraph.generated.nodes.Literal
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -16,7 +19,7 @@ import java.io.FileOutputStream
 class UpdateGraphTest {
     companion object {
         private val driver = DriverFactory(GraphDatabase.TINKER_GRAPH) as TinkerGraphDriver
-        private val TEST_PATH = "extractor_tests${File.separator}update_test${File.separator}"
+        private val TEST_PATH = "extractor_tests/update_test/"
         private lateinit var extractor: Extractor
         private lateinit var testFile1: File
         private lateinit var testFile2: File
@@ -40,6 +43,7 @@ class UpdateGraphTest {
 
     @AfterEach
     fun tearDown() {
+        LocalCache.clear()
         driver.close()
     }
 

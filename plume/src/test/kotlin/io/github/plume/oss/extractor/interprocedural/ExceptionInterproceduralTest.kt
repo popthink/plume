@@ -4,6 +4,7 @@ import io.github.plume.oss.Extractor
 import io.github.plume.oss.drivers.DriverFactory
 import io.github.plume.oss.drivers.GraphDatabase
 import io.github.plume.oss.drivers.TinkerGraphDriver
+import io.github.plume.oss.store.LocalCache
 import io.shiftleft.codepropertygraph.generated.EdgeTypes.AST
 import io.shiftleft.codepropertygraph.generated.EdgeTypes.CFG
 import io.shiftleft.codepropertygraph.generated.nodes.Block
@@ -25,7 +26,7 @@ class ExceptionInterproceduralTest {
         private val driver = DriverFactory(GraphDatabase.TINKER_GRAPH) as TinkerGraphDriver
         private lateinit var g: Graph
         private var PATH: File
-        private val TEST_PATH = "interprocedural${File.separator}exception"
+        private val TEST_PATH = "interprocedural/exception"
 
         init {
             val testFileUrl = ExceptionInterproceduralTest::class.java.classLoader.getResource(TEST_PATH)
@@ -40,7 +41,7 @@ class ExceptionInterproceduralTest {
         val extractor = Extractor(driver)
         // Select test resource based on integer in method name
         val currentTestNumber = testInfo.displayName.replace("[^0-9]".toRegex(), "")
-        val resourceDir = "${PATH.absolutePath}${File.separator}Exception$currentTestNumber.java"
+        val resourceDir = "${PATH.absolutePath}/Exception$currentTestNumber.java"
         // Load test resource and project + export graph
         val f = File(resourceDir)
         extractor.load(f).project()
@@ -52,6 +53,7 @@ class ExceptionInterproceduralTest {
 
     @AfterEach
     fun tearDown() {
+        LocalCache.clear()
         driver.close()
         g.close()
     }

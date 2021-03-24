@@ -4,6 +4,7 @@ import io.github.plume.oss.Extractor
 import io.github.plume.oss.drivers.DriverFactory
 import io.github.plume.oss.drivers.GraphDatabase
 import io.github.plume.oss.drivers.TinkerGraphDriver
+import io.github.plume.oss.store.LocalCache
 import io.shiftleft.codepropertygraph.generated.ControlStructureTypes.IF
 import io.shiftleft.codepropertygraph.generated.EdgeTypes.CFG
 import io.shiftleft.codepropertygraph.generated.Operators
@@ -23,7 +24,7 @@ class LoopIntraproceduralTest {
         private val driver = DriverFactory(GraphDatabase.TINKER_GRAPH) as TinkerGraphDriver
         private lateinit var g: Graph
         private var PATH: File
-        private val TEST_PATH = "intraprocedural${File.separator}loop"
+        private val TEST_PATH = "intraprocedural/loop"
 
         init {
             val testFileUrl = LoopIntraproceduralTest::class.java.classLoader.getResource(TEST_PATH)
@@ -54,6 +55,7 @@ class LoopIntraproceduralTest {
 
     @AfterEach
     fun tearDown() {
+        LocalCache.clear()
         driver.close()
         g.close()
     }

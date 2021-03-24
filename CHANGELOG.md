@@ -5,17 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.3.6] - [Unreleased]
+## [0.3.9] - 2021-03-23
+
+### Fixed
+
+- Progress bar causing call graph pass to freeze on large graphs. This has been removed.
+- Resource clearing was accidentally commented out in 0.3.8 - this has been addressed.
+
+## [0.3.8] - 2021-03-23
+
+### Added
+
+- Progress bar when logging level is `>= Level.INFO` for method related operations
+- Added cache2k to handle caching
+- `CacheMetrics` to track hits and misses
+- `METHOD_PARAMETER_IN` -`PARAMETER_LINK`-> `METHOD_PARAMETER_OUT` edge was included
+
+### Changed
+
+- Improved the node caching and centralized `tryGet` and `getOrMake`-style operations to `DriverCache.kt`
+- Separated the cache and storage into `storage._Cache` classes and `storage.PlumeStorage`
+
+### Fixed
+
+- Method/Local/MethodParameterIn have been created more closely to Ocular's output.
+
+## [0.3.7] - 2021-03-19
+
+### Fixed
+
+- `TigerGraphDriver` bug where empty strings for intentional properties would be unintentionally excluded.
+- `Member.name` and `FieldIdentifier.code` properly handled
+- Fixed temp dir resolution issue on macOS and Windows
+
+## [0.3.6] - 2021-03-18
 
 ### Added
 
 - `CONTAINS` edges are generated for `METHOD` to body vertices.
 - `ListMapper` to process Scala lists to a serialized string and back. More formally processing Scala lists to and from
   OverflowDB node objects.
+- Handle inheritance edges i.e. `TYPE_DECL -INHERITS_FROM-> TYPE`
 
 ### Changed
 
 - `BaseCpgPass` now uses a local cache for method body nodes instead of relying solely on `GlobalCache`
+- `SCPGPass` now known as `DataFlowPass` as all passes now come from `dataflowengineoss`.
+- Added `PROGRAM_STRUCTURE` to timer keys.
 
 ## [0.3.5] - 2021-03-17
 

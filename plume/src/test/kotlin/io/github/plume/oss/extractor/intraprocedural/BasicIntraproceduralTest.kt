@@ -4,6 +4,7 @@ import io.github.plume.oss.Extractor
 import io.github.plume.oss.drivers.DriverFactory
 import io.github.plume.oss.drivers.GraphDatabase
 import io.github.plume.oss.drivers.TinkerGraphDriver
+import io.github.plume.oss.store.LocalCache
 import io.shiftleft.codepropertygraph.generated.Operators
 import io.shiftleft.codepropertygraph.generated.nodes.*
 import io.shiftleft.codepropertygraph.generated.nodes.File as ODBFile
@@ -24,7 +25,8 @@ class BasicIntraproceduralTest {
         private val driver = DriverFactory(GraphDatabase.TINKER_GRAPH) as TinkerGraphDriver
         private lateinit var g: Graph
         private var PATH: File
-        private val TEST_PATH = "intraprocedural${File.separator}basic"
+        private val TEST_PATH = "intraprocedural/basic"
+        private val sep = File.separator
 
         init {
             val testFileUrl = BasicIntraproceduralTest::class.java.classLoader.getResource(TEST_PATH)
@@ -50,6 +52,7 @@ class BasicIntraproceduralTest {
 
     @AfterEach
     fun tearDown() {
+        LocalCache.clear()
         driver.close()
         g.close()
     }
@@ -59,7 +62,7 @@ class BasicIntraproceduralTest {
         val ns = g.nodes().asSequence().toList()
         assertNotNull(ns.filterIsInstance<NamespaceBlock>().find { it.name() == "intraprocedural.basic" })
         ns.filterIsInstance<ODBFile>()
-            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class" }
+            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class".replace("/", sep) }
             .let { assertNotNull(it) }
         ns.filterIsInstance<Method>().find { it.name() == "main" }.let { assertNotNull(it) }
         ns.filterIsInstance<Local>().find { it.name() == "a" }
@@ -76,7 +79,7 @@ class BasicIntraproceduralTest {
         val ns = g.nodes().asSequence().toList()
         assertNotNull(ns.filterIsInstance<NamespaceBlock>().find { it.name() == "intraprocedural.basic" })
         ns.filterIsInstance<ODBFile>()
-            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class" }
+            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class".replace("/", sep) }
             .let { assertNotNull(it) }
         ns.filterIsInstance<Method>().find { it.name() == "main" }.let { assertNotNull(it) }
         ns.filterIsInstance<Local>().find { it.name() == "a" }
@@ -93,7 +96,7 @@ class BasicIntraproceduralTest {
         val ns = g.nodes().asSequence().toList()
         assertNotNull(ns.filterIsInstance<NamespaceBlock>().find { it.name() == "intraprocedural.basic" })
         ns.filterIsInstance<ODBFile>()
-            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class" }
+            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class".replace("/", sep) }
             .let { assertNotNull(it) }
         ns.filterIsInstance<Method>().find { it.name() == "main" }.let { assertNotNull(it) }
         ns.filterIsInstance<Local>().find { it.name() == "a" }
@@ -110,7 +113,7 @@ class BasicIntraproceduralTest {
         val ns = g.nodes().asSequence().toList()
         assertNotNull(ns.filterIsInstance<NamespaceBlock>().find { it.name() == "intraprocedural.basic" })
         ns.filterIsInstance<ODBFile>()
-            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class" }
+            .find { it.name() == "/intraprocedural/basic/Basic$currentTestNumber.class".replace("/", sep) }
             .let { assertNotNull(it) }
         ns.filterIsInstance<Method>().find { it.name() == "main" }.let { assertNotNull(it) }
         ns.filterIsInstance<Method>().find { it.name() == "Sally" }.let { assertNotNull(it) }

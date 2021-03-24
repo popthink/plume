@@ -4,6 +4,7 @@ import io.github.plume.oss.Extractor
 import io.github.plume.oss.drivers.DriverFactory
 import io.github.plume.oss.drivers.GraphDatabase
 import io.github.plume.oss.drivers.TinkerGraphDriver
+import io.github.plume.oss.store.LocalCache
 import io.shiftleft.codepropertygraph.generated.ControlStructureTypes.SWITCH
 import io.shiftleft.codepropertygraph.generated.EdgeTypes.CFG
 import io.shiftleft.codepropertygraph.generated.EdgeTypes.CONDITION
@@ -25,7 +26,7 @@ class SwitchIntraproceduralTest {
         private val driver = DriverFactory(GraphDatabase.TINKER_GRAPH) as TinkerGraphDriver
         private lateinit var g: Graph
         private var PATH: File
-        private val TEST_PATH = "intraprocedural${File.separator}switches"
+        private val TEST_PATH = "intraprocedural/switches"
 
         init {
             val testFileUrl = SwitchIntraproceduralTest::class.java.classLoader.getResource(TEST_PATH)
@@ -52,6 +53,7 @@ class SwitchIntraproceduralTest {
 
     @AfterEach
     fun tearDown() {
+        LocalCache.clear()
         driver.close()
         g.close()
     }
